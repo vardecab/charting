@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-blue)
 
->Lorem ipsum dolor sit amet, consectetur adipiscing elit? :)
+>Experimenting a bit with drawing charts from currency rates.
 
 <!-- ## Screenshots -->
 
@@ -18,6 +18,7 @@
 
 ## Release History
 
+- 0.2: Added some functions and variables to quickly draw several charts.
 - 0.1: Initial release.
 
 <!-- <details> -->

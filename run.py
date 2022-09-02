@@ -28,37 +28,56 @@ this_run_datetime = timestamp = datetime.strftime(datetime.now(), '%y%m%d-%H%M%S
 # ----- check and create folders ----- #
 
 # files
-if not os.path.isdir("files"):
-    os.mkdir("files")
-    print(f"Folder created: files")
+if not os.path.isdir("files"): # if folder doesn't exist
+    os.mkdir("files") # create folder 
+    print("Folder created: files") # status
 
 # ---------- fun begins here --------- #
 
-# ------------ clean file ------------ #
-# NOTE: file doesn't have column names so let's rewrite it
+# --------- get & clean file --------- #
 
-filePath = '../forex-notifier/comparison_files/csv/EUR.csv' # using data from forex-notifier repo: https://github.com/vardecab/forex-notifier/tree/main/comparison_files/csv
+def cleanFile (currency):
+    
+    # NOTE: local
+    # build path
+    # TODO: try/except
+    folderPath = "../forex-notifier/comparison_files/csv/"
+    filePath = f"{folderPath}{currency}.csv"
+    # print(filePath) # debug
+    
+    # NOTE: remote 
+    # TODO: download it instead of taking local file + process below
+    # filePath = 'https://raw.githubusercontent.com/vardecab/forex-notifier/main/comparison_files/csv/EUR.csv'
+    
+    # NOTE: file doesn't have column names so let's rewrite it
+    # read file
+    # TODO: try/except
+    with open(filePath,newline='') as file: # open file 
+        readFile = csv.reader(file) # read file
+        data = list(readFile) # read data to a list 
+    # write file
+    # TODO: try/except
+    with open('files/' + currency.upper() + '.csv','w',newline='') as file: # create and save file
+        writeFile = csv.writer(file)
+        writeFile.writerow(['Timestamp','Rate']) # write column names to file
+        writeFile.writerows(data) # save back everything else
+        
+def draw (currency):
+    
+    # TODO: select hours or days instead of multiple runs in an hour
 
-# TODO: download it instead of taking local file + process below
-# filePath = 'https://raw.githubusercontent.com/vardecab/forex-notifier/main/comparison_files/csv/EUR.csv'
+    # TODO: try/except
+    file = pandas.read_csv('files/' + currency + '.csv') # read file
+    chart = px.line(file, x = 'Timestamp', y = 'Rate', title= currency.upper()) # draw a line chart with xy names and title
+    chart.show() # show the chart in a browser tab
 
-# read file
-with open(filePath,newline='') as file: # open file 
-    readFile = csv.reader(file) # read file
-    data = list(readFile) # read data to a list 
-# write file
-with open('files/EUR.csv','w',newline='') as file: # create file
-    writeFile = csv.writer(file)
-    writeFile.writerow(['Timestamp','Rate']) # write column names to file
-    writeFile.writerows(data) # save back everything else 
+# --------- choose currencies -------- #
 
-# ------------ do drawing ------------ #
-
-# TODO: select hours or days instead of multiple runs in an hour
-
-file = pandas.read_csv('files/EUR.csv')
-chart = px.line(file, x = 'Timestamp', y = 'Rate', title="Title") # draw a line chart with xy names and title
-chart.show() # show the chart in a browser tab
+cleanFile('eur'), draw('eur')
+# cleanFile('usd'), draw('usd')
+# cleanFile('gbp'), draw('gbp')
+# cleanFile('doteur'), draw('doteur')
+# cleanFile('btcusdt'), draw('btcusdt')
 
 # ----------- fun ends here ---------- #
 
@@ -67,3 +86,10 @@ chart.show() # show the chart in a browser tab
 end_time = time.time() # run time end 
 total_run_time = round(end_time-start_time,2)
 print(f"Total script run time: {total_run_time} seconds.")
+
+# ==================================== #
+#                 notes                #
+# ==================================== #
+
+# NOTE
+# https://plotly.com/python/plot-data-from-csv/
